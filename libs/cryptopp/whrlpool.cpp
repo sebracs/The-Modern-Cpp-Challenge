@@ -1,8 +1,7 @@
-// whrlpool.cpp - originally modified by Kevin Springle from
-// Paulo Barreto and Vincent Rijmen's public domain code, whirlpool.c.
-// Updated to Whirlpool version 3.0, optimized and SSE version added by Wei Dai
-// All modifications are placed in the public domain
-
+// whrlpool.cpp - originally modified by Kevin Springle from Paulo Barreto and Vincent Rijmen's
+//                public domain code, whirlpool.c. Updated to Whirlpool version 3.0, optimized
+//                and SSE version added by WD. All modifications are placed in the public domain.
+//
 // This is the original introductory comment:
 
 /**
@@ -74,11 +73,11 @@
 #include "misc.h"
 #include "cpu.h"
 
-// "Inline assembly operands don't work with .intel_syntax",
-//   http://llvm.org/bugs/show_bug.cgi?id=24232
-#if defined(CRYPTOPP_DISABLE_INTEL_ASM)
+#if defined(CRYPTOPP_DISABLE_WHIRLPOOL_ASM)
+# undef CRYPTOPP_X86_ASM_AVAILABLE
+# undef CRYPTOPP_X32_ASM_AVAILABLE
+# undef CRYPTOPP_X64_ASM_AVAILABLE
 # undef CRYPTOPP_SSE2_ASM_AVAILABLE
-# undef CRYPTOPP_SSSE3_ASM_AVAILABLE
 #endif
 
 NAMESPACE_BEGIN(CryptoPP)
@@ -90,6 +89,15 @@ void Whirlpool_TestInstantiations()
 }
 #endif
 
+std::string Whirlpool::AlgorithmProvider() const
+{
+#if CRYPTOPP_SSE2_ASM_AVAILABLE
+	if (HasSSE2())
+		return "SSE2";
+#endif
+	return "C++";
+}
+
 void Whirlpool::InitState(HashWordType *state)
 {
 	memset(state, 0, 8*sizeof(state[0]));
@@ -97,6 +105,7 @@ void Whirlpool::InitState(HashWordType *state)
 
 void Whirlpool::TruncatedFinal(byte *hash, size_t size)
 {
+	CRYPTOPP_ASSERT(hash != NULLPTR);
 	ThrowIfInvalidTruncatedSize(size);
 
 	PadLastBlock(32);
@@ -408,6 +417,9 @@ const word64 Whirlpool_C[4*256+R] = {
 // Whirlpool basic transformation. Transforms state based on block.
 void Whirlpool::Transform(word64 *digest, const word64 *block)
 {
+	CRYPTOPP_ASSERT(digest != NULLPTR);
+	CRYPTOPP_ASSERT(block != NULLPTR);
+
 #if CRYPTOPP_SSE2_ASM_AVAILABLE
 	if (HasSSE2())
 	{
@@ -426,15 +438,13 @@ void Whirlpool::Transform(word64 *digest, const word64 *block)
 		AS2(	mov		WORD_REG(cx), digest)
 		AS2(	mov		WORD_REG(dx), block)
 #endif
-#if CRYPTOPP_BOOL_X86 || CRYPTOPP_BOOL_X32
+#if CRYPTOPP_BOOL_X86
 		AS2(	mov		eax, esp)
 		AS2(	and		esp, -16)
 		AS2(	sub		esp, 16*8)
 		AS_PUSH_IF86(	ax)
 	#if CRYPTOPP_BOOL_X86
 		#define SSE2_workspace	esp+WORD_SZ
-	#elif CRYPTOPP_BOOL_X32
-		#define SSE2_workspace	esp+(WORD_SZ*2)
 	#endif
 #else
 	#define SSE2_workspace	%3

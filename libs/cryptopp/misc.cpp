@@ -280,21 +280,17 @@ void CallNewHandler()
 		throw std::bad_alloc();
 }
 
-#if CRYPTOPP_BOOL_ALIGN16
-
 void * AlignedAllocate(size_t size)
 {
 	byte *p;
-#if defined(CRYPTOPP_APPLE_ALLOC_AVAILABLE)
-	while ((p = (byte *)malloc(size)) == NULLPTR)
-#elif defined(CRYPTOPP_MM_MALLOC_AVAILABLE)
+#if defined(CRYPTOPP_MM_MALLOC_AVAILABLE)
 	while ((p = (byte *)_mm_malloc(size, 16)) == NULLPTR)
-#elif defined(CRYPTOPP_POSIX_MEMALIGN_AVAILABLE)
-	while (posix_memalign(reinterpret_cast<void**>(&p), 16, size) != 0)
 #elif defined(CRYPTOPP_MEMALIGN_AVAILABLE)
 	while ((p = (byte *)memalign(16, size)) == NULLPTR)
 #elif defined(CRYPTOPP_MALLOC_ALIGNMENT_IS_16)
 	while ((p = (byte *)malloc(size)) == NULLPTR)
+#elif defined(CRYPTOPP_POSIX_MEMALIGN_AVAILABLE)
+	while (posix_memalign(reinterpret_cast<void**>(&p), 16, size) != 0)
 #else
 	while ((p = (byte *)malloc(size + 16)) == NULLPTR)
 #endif
@@ -302,10 +298,13 @@ void * AlignedAllocate(size_t size)
 
 #ifdef CRYPTOPP_NO_ALIGNED_ALLOC
 	size_t adjustment = 16-((size_t)p%16);
+	CRYPTOPP_ASSERT(adjustment > 0);
 	p += adjustment;
 	p[-1] = (byte)adjustment;
 #endif
 
+	// If this assert fires then there are problems that need
+	// to be fixed. Please open a bug report.
 	CRYPTOPP_ASSERT(IsAlignedOn(p, 16));
 	return p;
 }
@@ -321,8 +320,6 @@ void AlignedDeallocate(void *p)
 	free(p);
 #endif
 }
-
-#endif  // CRYPTOPP_BOOL_ALIGN16
 
 void * UnalignedAllocate(size_t size)
 {

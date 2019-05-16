@@ -28,6 +28,11 @@
 #include "ec2n.h"
 #include "misc.h"
 
+// Squash MS LNK4221 and libtool warnings
+#ifndef CRYPTOPP_MANUALLY_INSTANTIATE_TEMPLATES
+extern const char ECCRYPTO_FNAME[] = __FILE__;
+#endif
+
 NAMESPACE_BEGIN(CryptoPP)
 
 #if 0
@@ -94,7 +99,12 @@ template<> struct EcRecommendedParameters<EC2N>
 		StringSource ssA(a, true, new HexDecoder);
 		StringSource ssB(b, true, new HexDecoder);
 		if (t0 == 0)
-			return new EC2N(GF2NT(t2, t3, t4), EC2N::FieldElement(ssA, (size_t)ssA.MaxRetrievable()), EC2N::FieldElement(ssB, (size_t)ssB.MaxRetrievable()));
+		{
+			if (t2 == 233 && t3 == 74 && t4 == 0)
+				return new EC2N(GF2NT233(233, 74, 0), EC2N::FieldElement(ssA, (size_t)ssA.MaxRetrievable()), EC2N::FieldElement(ssB, (size_t)ssB.MaxRetrievable()));
+			else
+				return new EC2N(GF2NT(t2, t3, t4), EC2N::FieldElement(ssA, (size_t)ssA.MaxRetrievable()), EC2N::FieldElement(ssB, (size_t)ssB.MaxRetrievable()));
+		}
 		else
 			return new EC2N(GF2NPP(t0, t1, t2, t3, t4), EC2N::FieldElement(ssA, (size_t)ssA.MaxRetrievable()), EC2N::FieldElement(ssB, (size_t)ssB.MaxRetrievable()));
 	};
@@ -485,7 +495,7 @@ bool DL_GroupParameters_EC<EC>::GetVoidValue(const char *name, const std::type_i
 {
 	if (strcmp(name, Name::GroupOID()) == 0)
 	{
-		if (m_oid.m_values.empty())
+		if (m_oid.Empty())
 			return false;
 
 		this->ThrowIfTypeMismatch(name, typeid(OID), valueType);
@@ -563,7 +573,7 @@ void DL_GroupParameters_EC<EC>::BERDecode(BufferedTransformation &bt)
 template <class EC>
 void DL_GroupParameters_EC<EC>::DEREncode(BufferedTransformation &bt) const
 {
-	if (m_encodeAsOID && !m_oid.m_values.empty())
+	if (m_encodeAsOID && !m_oid.Empty())
 		m_oid.DEREncode(bt);
 	else
 	{
@@ -595,7 +605,7 @@ template <class EC>
 Integer DL_GroupParameters_EC<EC>::ConvertElementToInteger(const Element &element) const
 {
 	return ConvertToInteger(element.x);
-};
+}
 
 template <class EC>
 bool DL_GroupParameters_EC<EC>::ValidateGroup(RandomNumberGenerator &rng, unsigned int level) const
@@ -747,7 +757,7 @@ void DL_PrivateKey_EC<EC>::DEREncodePrivateKey(BufferedTransformation &bt) const
 // ******************************************************************
 
 template <class EC>
-void DL_PublicKey_ECGDSA_ISO15946<EC>::BERDecodePublicKey(BufferedTransformation &bt, bool parametersPresent, size_t size)
+void DL_PublicKey_ECGDSA<EC>::BERDecodePublicKey(BufferedTransformation &bt, bool parametersPresent, size_t size)
 {
 	CRYPTOPP_UNUSED(parametersPresent);
 
@@ -758,7 +768,7 @@ void DL_PublicKey_ECGDSA_ISO15946<EC>::BERDecodePublicKey(BufferedTransformation
 }
 
 template <class EC>
-void DL_PublicKey_ECGDSA_ISO15946<EC>::DEREncodePublicKey(BufferedTransformation &bt) const
+void DL_PublicKey_ECGDSA<EC>::DEREncodePublicKey(BufferedTransformation &bt) const
 {
 	this->GetGroupParameters().GetCurve().EncodePoint(bt, this->GetPublicElement(), this->GetGroupParameters().GetPointCompression());
 }
@@ -766,7 +776,7 @@ void DL_PublicKey_ECGDSA_ISO15946<EC>::DEREncodePublicKey(BufferedTransformation
 // ******************************************************************
 
 template <class EC>
-void DL_PrivateKey_ECGDSA_ISO15946<EC>::BERDecodePrivateKey(BufferedTransformation &bt, bool parametersPresent, size_t size)
+void DL_PrivateKey_ECGDSA<EC>::BERDecodePrivateKey(BufferedTransformation &bt, bool parametersPresent, size_t size)
 {
 	CRYPTOPP_UNUSED(size);
 	BERSequenceDecoder seq(bt);
@@ -805,7 +815,7 @@ void DL_PrivateKey_ECGDSA_ISO15946<EC>::BERDecodePrivateKey(BufferedTransformati
 }
 
 template <class EC>
-void DL_PrivateKey_ECGDSA_ISO15946<EC>::DEREncodePrivateKey(BufferedTransformation &bt) const
+void DL_PrivateKey_ECGDSA<EC>::DEREncodePrivateKey(BufferedTransformation &bt) const
 {
 	DERSequenceEncoder privateKey(bt);
 		DEREncodeUnsigned<word32>(privateKey, 1);	// version
