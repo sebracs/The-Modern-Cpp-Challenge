@@ -17,6 +17,7 @@ namespace fs = std::experimental::filesystem;
 #  else
 namespace fs = std::filesystem;
 #  endif
+#include <functional>
 #endif
 
 void compress(
