@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <functional>
 
 template <typename Time = std::chrono::microseconds,
    typename Clock = std::chrono::high_resolution_clock>

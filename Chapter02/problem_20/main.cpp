@@ -3,6 +3,7 @@
 #include <array>
 #include <list>
 #include <assert.h>
+#include <algorithm>
 
 template<class C, class T>
 bool contains(C const & c, T const & value)

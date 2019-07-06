@@ -11,6 +11,7 @@
 #include <functional>
 #include <type_traits>
 #include <assert.h>
+#include <cstring>
 
 #ifdef _WIN32
 #include <objbase.h>

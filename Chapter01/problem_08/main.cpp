@@ -3,6 +3,7 @@
 #include <numeric>
 #include <cmath>
 #include <chrono>
+#include <functional>
 
 template <typename Time = std::chrono::microseconds,
    typename Clock = std::chrono::high_resolution_clock>

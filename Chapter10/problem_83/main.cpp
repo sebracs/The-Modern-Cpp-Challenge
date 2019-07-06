@@ -3,11 +3,13 @@
 #include <string_view>
 #include <random>
 #include <array>
+#include <algorithm>
+#include <functional>
 
 #include "pngwriter.h"
 
 void create_image(
-   int const width, int const height, 
+   int const width, int const height,
    std::string_view font, int const font_size,
    std::string_view filepath)
 {
@@ -77,7 +79,7 @@ int main()
    std::cin >> font_path;
 #endif
 
-   create_image(200, 50, 
+   create_image(200, 50,
                 font_path, 18,
                 "validation.png");
 }

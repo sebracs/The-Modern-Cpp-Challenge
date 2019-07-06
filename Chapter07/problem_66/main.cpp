@@ -9,6 +9,7 @@
 #include <queue>
 #include <string>
 #include <array>
+#include <algorithm>
 
 class logger
 {
@@ -72,7 +73,7 @@ int main()
    bool store_open = true;
    std::mutex mt;
    std::condition_variable cv;
-   
+
    std::vector<std::thread> desks;
    for (int i = 1; i <= 3; ++i)
    {
@@ -83,38 +84,38 @@ int main()
          std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
          std::mt19937 eng(seq);
          std::uniform_int_distribution<> ud(2000, 3000);
-         
+
          logger::instance().log("desk " + std::to_string(i) + " open");
-         
+
          while (store_open || !customers.empty())
          {
             std::unique_lock<std::mutex> locker(mt);
-            
+
             cv.wait_for(locker, std::chrono::seconds(1),
                         [&customers]() {return !customers.empty(); });
-            
+
             if (!customers.empty())
             {
                auto const c = customers.top();
                customers.pop();
-               
+
                logger::instance().log("[-] desk " + std::to_string(i) + " handling customer " + std::to_string(c.ticket_number()));
-               
+
                logger::instance().log("[=] queue size: " + std::to_string(customers.size()));
-               
+
                locker.unlock();
                cv.notify_one();
-               
+
                std::this_thread::sleep_for(std::chrono::milliseconds(ud(eng)));
-               
+
                logger::instance().log("[ ] desk " + std::to_string(i) + " done with customer " + std::to_string(c.ticket_number()));
             }
          }
-         
+
          logger::instance().log("desk " + std::to_string(i) + " closed");
       });
    }
-   
+
    std::thread store([&store_open, &customers, &mt, &cv]() {
       ticketing_machine tm(100);
       std::random_device rd;
@@ -123,24 +124,24 @@ int main()
       std::seed_seq seq(std::begin(seed_data), std::end(seed_data));
       std::mt19937 eng(seq);
       std::uniform_int_distribution<> ud(200, 500);
-      
+
       for (int i = 1; i <= 25; ++i)
       {
          customer c(tm.next());
          customers.push(c);
-         
+
          logger::instance().log("[+] new customer with ticket " + std::to_string(c.ticket_number()));
          logger::instance().log("[=] queue size: " + std::to_string(customers.size()));
-         
+
          cv.notify_one();
-         
+
          std::this_thread::sleep_for(std::chrono::milliseconds(ud(eng)));
       }
-      
+
       store_open = false;
    });
-   
+
    store.join();
-   
+
    for (auto & desk : desks) desk.join();
 }

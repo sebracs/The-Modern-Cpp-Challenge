@@ -4,6 +4,7 @@
 #include <array>
 #include <thread>
 #include <chrono>
+#include <algorithm>
 
 class universe
 {
@@ -31,7 +32,7 @@ public:
 
    void run(
       seed const s,
-      int const generations, 
+      int const generations,
       std::chrono::milliseconds const ms = std::chrono::milliseconds(100))
    {
       reset();
@@ -39,7 +40,7 @@ public:
       display();
 
       int i = 0;
-      do 
+      do
       {
          next_generation();
          display();
@@ -65,7 +66,7 @@ private:
             {
                newgrid[r * columns + c] = (count == 2 || count == 3) ? alive : dead;
             }
-            else 
+            else
             {
                newgrid[r * columns + c] = (count == 3) ? alive : dead;
             }
@@ -74,7 +75,7 @@ private:
 
       grid.swap(newgrid);
    }
-    
+
    void reset_display()
    {
 #ifdef _WIN32
@@ -159,15 +160,15 @@ private:
       }
    }
 
-    
+
    int count_alive() { return 0; }
-    
+
    template<typename T1, typename... T>
    auto count_alive(T1 s, T... ts) { return s + count_alive(ts...); }
-    
+
    int count_neighbors(size_t const row, size_t const col)
    {
-      if (row == 0 && col == 0) 
+      if (row == 0 && col == 0)
          return count_alive(cell(1, 0), cell(1,1), cell(0, 1));
       if (row == 0 && col == columns - 1)
          return count_alive(cell(columns - 2, 0), cell(columns - 2, 1), cell(columns - 1, 1));
@@ -183,7 +184,7 @@ private:
          return count_alive(cell(0, row - 1), cell(1, row - 1), cell(1, row), cell(1, row + 1), cell(0, row + 1));
       if (col == columns - 1 && row > 0 && row < rows - 1)
          return count_alive(cell(col, row - 1), cell(col - 1, row - 1), cell(col - 1, row), cell(col - 1, row + 1), cell(col, row + 1));
-         
+
       return count_alive(cell(col - 1, row - 1), cell(col, row - 1), cell(col + 1, row - 1), cell(col + 1, row), cell(col + 1, row + 1), cell(col, row + 1), cell(col - 1, row + 1), cell(col - 1, row));
    }
 
