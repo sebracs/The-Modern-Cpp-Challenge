@@ -5,10 +5,18 @@
 
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 
-#include "sha.h"
-#include "md5.h"
-#include "hex.h"
-#include "files.h"
+#ifdef _WIN32
+   #include "sha.h"
+   #include "md5.h"
+   #include "hex.h"
+   #include "files.h"
+   typedef unsigned char byte;
+#elif __unix__
+   #include <crypto++/sha.h>
+   #include <crypto++/md5.h>
+   #include <crypto++/hex.h>
+   #include <crypto++/files.h>
+#endif
 
 #ifdef USE_BOOST_FILESYSTEM
 #  include <boost/filesystem/path.hpp>
@@ -30,7 +38,7 @@ std::string compute_hash(fs::path const & filepath)
    if (file.is_open())
    {
       Hash hash;
-      CryptoPP::byte digest[Hash::DIGESTSIZE] = { 0 };
+      byte digest[Hash::DIGESTSIZE] = { 0 };
 
       do
       {
@@ -42,7 +50,7 @@ std::string compute_hash(fs::path const & filepath)
          if (extracted > 0)
          {
             hash.Update(
-               reinterpret_cast<CryptoPP::byte*>(buffer),
+               reinterpret_cast<byte*>(buffer),
                extracted);
          }
       } while (!file.fail());

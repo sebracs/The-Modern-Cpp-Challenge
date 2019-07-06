@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.6) 
+cmake_minimum_required (VERSION 2.6)
 project(LibPng)
 
 set(LIBPNG_INCLUDE_DIRS ${LibPng_SOURCE_DIR} PARENT_SCOPE)
@@ -6,7 +6,7 @@ set(LIBPNG_LDFLAGS LibPng PARENT_SCOPE)
 
 include_directories (${ZLIB_INCLUDE_DIRS})
 
-add_library (LibPng 
+add_library (LibPng
 #sources
 png.c
 pngerror.c
@@ -33,5 +33,7 @@ pnglibconf.h
 pngpriv.h
 pngstruct.h
 )
+
+target_link_libraries(LibPng Zlib)
 
 set_target_properties (LibPng PROPERTIES FOLDER "00.Libs")

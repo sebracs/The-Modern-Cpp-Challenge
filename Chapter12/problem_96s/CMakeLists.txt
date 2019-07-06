@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.7.0) 
+cmake_minimum_required (VERSION 3.7.0)
 project(problem_96s)
 
 if (UNIX)
@@ -9,5 +9,10 @@ endif()
 include_directories(${LIBS_PATH}/asio/include)
 
 add_executable(problem_96s main.cpp)
+
+if(UNIX)
+  find_package(Threads REQUIRED)
+  target_link_libraries(problem_96s Threads::Threads)
+endif()
 
 set_target_properties (problem_96s PROPERTIES FOLDER "12.NetworkingCloud")

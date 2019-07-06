@@ -2,10 +2,18 @@
 #include <string>
 #include <string_view>
 
-#include "sha.h"
-#include "hex.h"
-#include "files.h"
-#include "default.h"
+#ifdef _WIN32
+   #include "sha.h"
+   #include "hex.h"
+   #include "files.h"
+   #include "default.h"
+   typedef unsigned char byte;
+#elif __unix__
+   #include <crypto++/sha.h>
+   #include <crypto++/hex.h>
+   #include <crypto++/files.h>
+   #include <crypto++/default.h>
+#endif
 
 #ifdef USE_BOOST_FILESYSTEM
 #  include <boost/filesystem/path.hpp>
@@ -29,7 +37,7 @@ void encrypt_file(
       sourcefile.c_str(),
       true,
       new CryptoPP::DefaultEncryptorWithMAC(
-      (CryptoPP::byte*)password.data(), password.size(),
+      (byte*)password.data(), password.size(),
          new CryptoPP::FileSink(
             destfile.c_str())
       )
@@ -57,7 +65,7 @@ void decrypt_file(
       sourcefile.c_str(),
       true,
       new CryptoPP::DefaultDecryptorWithMAC(
-      (CryptoPP::byte*)password.data(), password.size(),
+      (byte*)password.data(), password.size(),
          new CryptoPP::FileSink(
             destfile.c_str())
       )

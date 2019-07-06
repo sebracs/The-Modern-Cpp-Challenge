@@ -2,11 +2,19 @@
 #include <string>
 #include <assert.h>
 
-#include "rsa.h"
-#include "aes.h"
-#include "hex.h"
-#include "files.h"
-#include "osrng.h"
+#ifdef _WIN32
+   #include "rsa.h"
+   #include "aes.h"
+   #include "hex.h"
+   #include "files.h"
+   #include "osrng.h"
+#elif __unix__
+   #include <crypto++/rsa.h>
+   #include <crypto++/aes.h>
+   #include <crypto++/hex.h>
+   #include <crypto++/files.h>
+   #include <crypto++/osrng.h>
+#endif
 
 #ifdef USE_BOOST_FILESYSTEM
 #  include <boost/filesystem/path.hpp>

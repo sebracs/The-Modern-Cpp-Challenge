@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.7.0) 
+cmake_minimum_required (VERSION 3.7.0)
 project(problem_86)
 
 include_directories(${LIBS_PATH}/sqlite)
@@ -13,10 +13,16 @@ endif()
 
 add_executable(problem_86 ${LIBS_PATH}/sqlite/sqlite3.c main.cpp)
 
+if(UNIX)
+  find_package(Threads REQUIRED)
+  target_link_libraries(problem_86 Threads::Threads)
+  target_link_libraries(problem_86 ${CMAKE_DL_LIBS})
+endif()
+
 add_custom_command(TARGET problem_86 PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
                    ${PROJECT_SOURCE_DIR}/cppchallenger86.db $<TARGET_FILE_DIR:problem_86>)
-                   
+
 add_custom_command(TARGET problem_86 PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy
                    ${PROJECT_SOURCE_DIR}/cppchallenger86.db ${CMAKE_CURRENT_BINARY_DIR})

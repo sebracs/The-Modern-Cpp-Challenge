@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.7.0) 
+cmake_minimum_required (VERSION 3.7.0)
 project(problem_80)
 
 include_directories(${LIBS_PATH}/ZipLib)
@@ -15,10 +15,16 @@ endif()
 
 add_executable(problem_80 main.cpp)
 
+if(UNIX)
+  find_package(Threads REQUIRED)
+  target_link_libraries(problem_80 Threads::Threads)
+endif()
+
+
 if(BOOST_FILESYSTEM)
    if(UNIX)
       find_package(Boost COMPONENTS system filesystem REQUIRED)
-      
+
       target_link_libraries(problem_80 ${Boost_FILESYSTEM_LIBRARY}
                                        ${Boost_SYSTEM_LIBRARY})
    endif()

@@ -4,8 +4,14 @@
 #include <iomanip>
 #include <vector>
 
-#include "sha.h"
-#include "hex.h"
+#ifdef _WIN32
+   #include "sha.h"
+   #include "hex.h"
+   typedef unsigned char byte;
+#elif __unix__
+   #include <crypto++/sha.h>
+   #include <crypto++/hex.h>
+#endif
 
 struct user
 {
@@ -19,11 +25,11 @@ struct user
 std::string get_hash(std::string_view password)
 {
    CryptoPP::SHA512 sha;
-   CryptoPP::byte digest[CryptoPP::SHA512::DIGESTSIZE];
+   byte digest[CryptoPP::SHA512::DIGESTSIZE];
 
    sha.CalculateDigest(
       digest,
-      reinterpret_cast<CryptoPP::byte const*>(password.data()),
+      reinterpret_cast<byte const*>(password.data()),
       password.length());
 
    CryptoPP::HexEncoder encoder;

@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.7.0) 
+cmake_minimum_required (VERSION 3.7.0)
 project(problem_92)
 
 include_directories(${LIBS_PATH}/cryptopp)
@@ -20,12 +20,16 @@ add_executable(problem_92 main.cpp)
 if(BOOST_FILESYSTEM)
    if(UNIX)
       find_package(Boost COMPONENTS system filesystem REQUIRED)
-      
+
       target_link_libraries(problem_92 ${Boost_FILESYSTEM_LIBRARY}
                                        ${Boost_SYSTEM_LIBRARY})
    endif()
 endif()
 
-target_link_libraries(problem_92 cryptlib)
+if (WIN32)
+   target_link_libraries(problem_92 cryptlib)
+elseif (UNIX)
+   target_link_libraries(problem_92 cryptopp)
+endif()
 
 set_target_properties (problem_92 PROPERTIES FOLDER "11.Cryptography")
