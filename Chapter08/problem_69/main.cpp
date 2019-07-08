@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <numeric>
 #include <assert.h>
+#include <functional>
 
 enum class sex_type {female, male};
 

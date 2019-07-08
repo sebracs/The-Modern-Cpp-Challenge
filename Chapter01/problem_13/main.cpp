@@ -2,6 +2,7 @@
 #include <random>
 #include <algorithm>
 #include <array>
+#include <functional>
 
 template <
    typename E = std::mt19937, 

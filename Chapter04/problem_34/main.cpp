@@ -8,6 +8,7 @@ namespace fs = boost::filesystem;
 #else
 #  include <filesystem>
 #  ifdef FILESYSTEM_EXPERIMENTAL
+#     include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 #  else
 namespace fs = std::filesystem;

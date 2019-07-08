@@ -10,6 +10,7 @@
 #include <string>
 #include <array>
 #include <algorithm>
+#include <functional>
 
 class logger
 {

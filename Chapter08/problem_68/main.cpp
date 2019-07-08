@@ -4,6 +4,7 @@
 #include <random>
 #include <array>
 #include <algorithm>
+#include <functional>
 
 class password_generator
 {

@@ -7,6 +7,7 @@
 #include <chrono>
 #include <future>
 #include <assert.h>
+#include <functional>
 
 template <typename Iterator, typename F>
 auto sprocess(Iterator begin, Iterator end, F&& f)
