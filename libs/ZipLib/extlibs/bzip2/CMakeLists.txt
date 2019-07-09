@@ -7,3 +7,6 @@ file(GLOB sources *.c)
 add_library (bzip2 STATIC ${headers} ${sources})
 
 set_target_properties (bzip2 PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(bzip2 PROPERTIES COMPILE_FLAGS "-w")
+endif()

@@ -37,3 +37,6 @@ pngstruct.h
 target_link_libraries(LibPng Zlib)
 
 set_target_properties (LibPng PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(LibPng PROPERTIES COMPILE_FLAGS "-w")
+endif()

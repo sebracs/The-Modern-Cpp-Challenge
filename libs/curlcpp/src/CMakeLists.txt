@@ -27,3 +27,6 @@ add_library(curlcpp ${CURLCPP_SOURCE})
 install (TARGETS curlcpp LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 
 set_target_properties (curlcpp PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(curlcpp PROPERTIES COMPILE_FLAGS "-w")
+endif()

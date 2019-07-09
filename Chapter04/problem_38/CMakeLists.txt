@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 3.7.0)
 project(problem_38)
 
 include_directories(${LIBS_PATH}/stduuid)
+set_source_files_properties(${LIBS_PATH}/stduuid/uuid.h PROPERTIES COMPILE_FLAGS "-w")
 
 if(BOOST_FILESYSTEM)
    include_directories(${BOOST_INCLUDE_DIR})

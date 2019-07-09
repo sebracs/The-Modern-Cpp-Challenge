@@ -14,3 +14,6 @@ target_link_libraries(PngWriter LibPng)
 target_link_libraries(PngWriter FreeType)
 
 set_target_properties (PngWriter PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(PngWriter PROPERTIES COMPILE_FLAGS "-w")
+endif()

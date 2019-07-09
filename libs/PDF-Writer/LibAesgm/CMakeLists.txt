@@ -26,3 +26,6 @@ brg_types.h
 )
 
 set_target_properties (LibAesgm PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(LibAesgm PROPERTIES COMPILE_FLAGS "-w")
+endif()

@@ -67,3 +67,6 @@ jversion.h
 )
 
 set_target_properties (LibJpeg PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(LibJpeg PROPERTIES COMPILE_FLAGS "-w")
+endif()

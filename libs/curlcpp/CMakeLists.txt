@@ -26,6 +26,8 @@ ELSE()
     file(GLOB HEADER_LIST "${CMAKE_SOURCE_DIR}/include/*.h")
     install (FILES ${HEADER_LIST} DESTINATION include)
 
+    set_source_files_properties(${HEADER_LIST} PROPERTIES COMPILE_FLAGS "-w")
+
     # Set up source directories
     add_subdirectory(src)
 

@@ -370,6 +370,9 @@ XObjectContentContext.h
 )
 target_link_libraries(PDFWriter ${LIBAESGM_LDFLAGS} ${LIBJPEG_LDFLAGS} ${ZLIB_LDFLAGS} ${LIBTIFF_LDFLAGS} ${FREETYPE_LDFLAGS})
 set_target_properties(PDFWriter PROPERTIES VERSION ${PDFWRITER_LIB_VERSION} SOVERSION ${PDFWRITER_SO_VERSION})
+if(UNIX)
+    set_target_properties(PDFWriter PROPERTIES COMPILE_FLAGS "-w")
+endif()
 
 install(TARGETS PDFWriter
     RUNTIME DESTINATION bin COMPONENT libraries

@@ -10,3 +10,6 @@ file(GLOB sources *.cpp)
 add_library (cryptlib STATIC ${headers} ${sources})
 
 set_target_properties (cryptlib PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(cryptlib PROPERTIES COMPILE_FLAGS "-w")
+endif()

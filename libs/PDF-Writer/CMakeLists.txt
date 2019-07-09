@@ -48,3 +48,6 @@ ADD_SUBDIRECTORY(PDFWriter)
 # ADD_SUBDIRECTORY(PDFWriterTestPlayground)
 
 set_target_properties (PDFWriter PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(PDFWriter PROPERTIES COMPILE_FLAGS "-w")
+endif()

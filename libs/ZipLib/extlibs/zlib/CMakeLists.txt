@@ -7,3 +7,6 @@ file(GLOB sources *.c)
 add_library (zlib STATIC ${headers} ${sources})
 
 set_target_properties (zlib PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(zlib PROPERTIES COMPILE_FLAGS "-w")
+endif()

@@ -12,3 +12,6 @@ endif()
 add_library (lzma STATIC ${headers} ${sources})
 
 set_target_properties (lzma PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(lzma PROPERTIES COMPILE_FLAGS "-w")
+endif()

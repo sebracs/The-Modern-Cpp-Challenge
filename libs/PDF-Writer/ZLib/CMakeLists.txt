@@ -37,3 +37,6 @@ zutil.h
 )
 
 set_target_properties (Zlib PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(Zlib PROPERTIES COMPILE_FLAGS "-w")
+endif()

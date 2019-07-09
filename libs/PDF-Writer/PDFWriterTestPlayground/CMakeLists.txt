@@ -395,6 +395,10 @@ if(NOT PDFHUMMUS_NO_PNG)
 	target_link_libraries (PDFWriterTestPlayground ${LIBPNG_LDFLAGS})
 endif(NOT PDFHUMMUS_NO_PNG)
 
+if(UNIX)
+    set_target_properties(PDFWriterTestPlayground PROPERTIES COMPILE_FLAGS "-w")
+endif()
+
 if(APPLE)
 	set(CMAKE_EXE_LINKER_FLAGS "-framework CoreFoundation")
 endif(APPLE)

@@ -85,3 +85,6 @@ uvcode.h
 )
 
 set_target_properties (LibTiff PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(LibTiff PROPERTIES COMPILE_FLAGS "-w")
+endif()

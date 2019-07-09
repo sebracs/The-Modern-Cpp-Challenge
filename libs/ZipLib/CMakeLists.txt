@@ -15,3 +15,6 @@ target_link_libraries(ZipLib lzma)
 target_link_libraries(ZipLib zlib)
 
 set_target_properties (ZipLib PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(ZipLib PROPERTIES COMPILE_FLAGS "-w")
+endif()

@@ -67,3 +67,6 @@ include/ft2build.h
 )
 
 set_target_properties (FreeType PROPERTIES FOLDER "00.Libs")
+if(UNIX)
+    set_target_properties(FreeType PROPERTIES COMPILE_FLAGS "-w")
+endif()
