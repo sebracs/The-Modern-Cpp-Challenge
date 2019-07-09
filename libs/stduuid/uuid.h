@@ -60,14 +60,14 @@ namespace uuids
 
          static constexpr unsigned int block_bytes = 64;
 
-         inline static uint32_t left_rotate(uint32_t value, size_t const count) 
+         inline static uint32_t left_rotate(uint32_t value, size_t const count)
          {
             return (value << count) ^ (value >> (32 - count));
          }
 
          sha1() { reset(); }
 
-         void reset() 
+         void reset()
          {
             m_digest[0] = 0x67452301;
             m_digest[1] = 0xEFCDAB89;
@@ -78,7 +78,7 @@ namespace uuids
             m_byteCount = 0;
          }
 
-         void process_byte(uint8_t octet) 
+         void process_byte(uint8_t octet)
          {
             this->m_block[this->m_blockByteIndex++] = octet;
             ++this->m_byteCount;
@@ -89,11 +89,11 @@ namespace uuids
             }
          }
 
-         void process_block(void const * const start, void const * const end) 
+         void process_block(void const * const start, void const * const end)
          {
             const uint8_t* begin = static_cast<const uint8_t*>(start);
             const uint8_t* finish = static_cast<const uint8_t*>(end);
-            while (begin != finish) 
+            while (begin != finish)
             {
                process_byte(*begin);
                begin++;
@@ -106,7 +106,7 @@ namespace uuids
             process_block(block, block + len);
          }
 
-         uint32_t const * get_digest(digest32_t digest) 
+         uint32_t const * get_digest(digest32_t digest)
          {
             size_t const bitCount = this->m_byteCount * 8;
             process_byte(0x80);
@@ -132,11 +132,11 @@ namespace uuids
             process_byte(static_cast<unsigned char>((bitCount >> 8) & 0xFF));
             process_byte(static_cast<unsigned char>((bitCount) & 0xFF));
 
-            memcpy(digest, m_digest, 5 * sizeof(uint32_t));
+            std::memcpy(digest, m_digest, 5 * sizeof(uint32_t));
             return digest;
          }
 
-         uint8_t const * get_digest_bytes(digest8_t digest) 
+         uint8_t const * get_digest_bytes(digest8_t digest)
          {
             digest32_t d32;
             get_digest(d32);
@@ -170,7 +170,7 @@ namespace uuids
          }
 
       private:
-         void process_block() 
+         void process_block()
          {
             uint32_t w[80];
             for (size_t i = 0; i < 16; i++) {
@@ -189,7 +189,7 @@ namespace uuids
             uint32_t d = m_digest[3];
             uint32_t e = m_digest[4];
 
-            for (std::size_t i = 0; i < 80; ++i) 
+            for (std::size_t i = 0; i < 80; ++i)
             {
                uint32_t f = 0;
                uint32_t k = 0;
@@ -262,23 +262,23 @@ namespace uuids
       // N bit pattern: 0xxx
       // > the first 6 octets of the UUID are a 48-bit timestamp (the number of 4 microsecond units of time since 1 Jan 1980 UTC);
       // > the next 2 octets are reserved;
-      // > the next octet is the "address family"; 
+      // > the next octet is the "address family";
       // > the final 7 octets are a 56-bit host ID in the form specified by the address family
       ncs,
-      
-      // RFC 4122/DCE 1.1 
+
+      // RFC 4122/DCE 1.1
       // N bit pattern: 10xx
       // > big-endian byte order
       rfc,
-      
+
       // Microsoft Corporation backward compatibility
       // N bit pattern: 110x
       // > little endian byte order
-      // > formely used in the Component Object Model (COM) library      
+      // > formely used in the Component Object Model (COM) library
       microsoft,
-      
+
       // reserved for possible future definition
-      // N bit pattern: 111x      
+      // N bit pattern: 111x
       reserved
    };
 
@@ -421,8 +421,9 @@ namespace uuids
 
          self_type & operator+=(difference_type const offset)
          {
-            if (index + offset < 0 || index + offset > uuid::state_size)
-               throw std::out_of_range("Iterator cannot be incremented past the end of the data.");
+            if (static_cast<difference_type>(index) + offset < 0 ||
+               static_cast<difference_type>(index) + offset > uuid::state_size)
+               throw std::out_of_range("Iterator cannot be incremented outside data bounds.");
 
             index += offset;
             return *this;
@@ -565,8 +566,9 @@ namespace uuids
 
          self_type & operator+=(difference_type const offset)
          {
-            if (index + offset < 0 || index + offset > uuid::state_size)
-               throw std::out_of_range("Iterator cannot be incremented past the end of the data.");
+            if (static_cast<difference_type>(index) + offset < 0 ||
+                static_cast<difference_type>(index) + offset > uuid::state_size)
+               throw std::out_of_range("Iterator cannot be incremented outside data bounds.");
 
             index += offset;
             return *this;
@@ -649,7 +651,7 @@ namespace uuids
 
       constexpr std::size_t size() const noexcept { return state_size; }
 
-      constexpr bool nil() const noexcept
+      constexpr bool is_nil() const noexcept
       {
          for (size_t i = 0; i < data.size(); ++i) if (data[i] != 0) return false;
          return true;
@@ -658,11 +660,6 @@ namespace uuids
       void swap(uuid & other) noexcept
       {
          data.swap(other.data);
-      }
-
-      friend void swap(uuid& lhs, uuid& rhs) noexcept
-      {
-         std::swap(lhs.data, rhs.data);
       }
 
       iterator begin() noexcept { return uuid_iterator(&data[0], 0); }
@@ -678,7 +675,7 @@ namespace uuids
 
       template <class Elem, class Traits>
       friend std::basic_ostream<Elem, Traits> & operator<<(std::basic_ostream<Elem, Traits> &s, uuid const & id);
-   
+
       template <typename TChar>
       void create(TChar const * const str, size_t const size)
       {
@@ -756,21 +753,26 @@ namespace uuids
          << std::setw(2) << (int)id.data[15];
    }
 
-   std::string to_string(uuid const & id)
+   inline std::string to_string(uuid const & id)
    {
       std::stringstream sstr;
       sstr << id;
       return sstr.str();
    }
 
-   std::wstring to_wstring(uuid const & id)
+   inline std::wstring to_wstring(uuid const & id)
    {
       std::wstringstream sstr;
       sstr << id;
       return sstr.str();
    }
 
-   class uuid_default_generator
+   inline void swap(uuids::uuid & lhs, uuids::uuid & rhs)
+   {
+      lhs.swap(rhs);
+   }
+
+   class uuid_system_generator
    {
    public:
       typedef uuid result_type;
@@ -839,7 +841,7 @@ namespace uuids
          auto bytes = CFUUIDGetUUIDBytes(newId);
          CFRelease(newId);
 
-         std::array<uint8_t, 16> bytes =
+         std::array<uint8_t, 16> arrbytes =
          { {
                bytes.byte0,
                bytes.byte1,
@@ -858,7 +860,7 @@ namespace uuids
                bytes.byte14,
                bytes.byte15
             } };
-         return uuid{ std::begin(bytes), std::end(bytes) };
+         return uuid{ std::begin(arrbytes), std::end(arrbytes) };
 #elif
          return uuid{};
 #endif
@@ -866,7 +868,7 @@ namespace uuids
    };
 
    template <typename UniformRandomNumberGenerator>
-   class basic_uuid_random_generator 
+   class basic_uuid_random_generator
    {
    public:
       typedef uuid result_type;
@@ -906,7 +908,7 @@ namespace uuids
    };
 
    using uuid_random_generator = basic_uuid_random_generator<std::mt19937>;
-   
+
    class uuid_name_generator
    {
    public:
@@ -931,19 +933,19 @@ namespace uuids
       }
 
    private:
-      void reset() 
+      void reset()
       {
          hasher.reset();
          uint8_t bytes[uuid::state_size];
          std::copy(std::begin(nsuuid), std::end(nsuuid), bytes);
          hasher.process_bytes(bytes, uuid::state_size);
       }
-      
+
       template <typename char_type,
                 typename = std::enable_if_t<std::is_integral<char_type>::value>>
       void process_characters(char_type const * const characters, size_t const count)
       {
-         for (size_t i = 0; i < count; i++) 
+         for (size_t i = 0; i < count; i++)
          {
             uint32_t c = characters[i];
             hasher.process_byte(static_cast<unsigned char>((c >> 0) & 0xFF));
@@ -977,17 +979,11 @@ namespace uuids
    private:
       uuid nsuuid;
       detail::sha1 hasher;
-   }; 
+   };
 }
 
 namespace std
 {
-   template <>
-   void swap(uuids::uuid & lhs, uuids::uuid & rhs)
-   {
-      lhs.swap(rhs);
-   }
-
    template <>
    struct hash<uuids::uuid>
    {
