@@ -8,7 +8,7 @@ include_directories(${LIBS_PATH}/curlcpp/include)
 
 add_executable(problem_99 main.cpp)
 
-target_link_libraries(problem_99 libcurl)
+target_link_libraries(problem_99 ${CURL_LIKING})
 target_link_libraries(problem_99 curlcpp)
 
 if (UNIX)
